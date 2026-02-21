@@ -8,7 +8,7 @@ import glob  # also imported in common so it must be after
 
 __version__ = '0.3.4'
 
-gst_ver = '1.18.6'
+gst_ver = '1.27.90'
 
 glob_escape = glob.escape
 
@@ -16,7 +16,7 @@ glob_escape = glob.escape
 def get_gstreamer(
         cache, build_path, arch, package, output, download_only=False):
     data = []
-    bitness = 'x86_64' if arch == 'x64' else 'x86'
+    bitness = 'x86_64' if arch == 'x64' else arch
     compiler = 'msvc'
     runtime_name = 'gstreamer-1.0-{}-{}-{}.msi'.format(
         compiler, bitness, gst_ver)

@@ -24,7 +24,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        arch: ['x64']
+        arch: ['x64', 'arm64']
     env:
       PACKAGE_ARCH: ${{ matrix.arch }}
     steps:
@@ -48,13 +48,18 @@ jobs:
           Download-Packages
 
   windows_wheels:
-    runs-on: windows-latest
     needs: prepare_cache
     strategy:
       fail-fast: false
       matrix:
         python: [ '3.9', '3.10', '3.11', '3.12', '3.13', '3.14' ]
-        arch: ['x64']
+        arch: ['x64', 'arm64']
+        exclude:
+          - arch: 'arm64'
+            python: '3.9'
+          - arch: 'arm64'
+            python: '3.10'
+    runs-on: ${{ case(matrix.arch=='arm64', 'windows-11-arm64', 'windows-latest') }}
     env:
       PACKAGE_ARCH: ${{ matrix.arch }}
     steps:

@@ -21,10 +21,15 @@ env:
 
 jobs:
   prepare_angle:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ['x64', 'arm64']
     # using windows-2022 as windows-2025 does not have the proper Windows SDK installed
-    runs-on: windows-2022
+    runs-on: ${{ case(matrix.arch=='arm64', 'windows-11-arm64', 'windows-2022') }}
     env:
       DEPOT_TOOLS_WIN_TOOLCHAIN: 0
+      PACKAGE_ARCH: ${{ matrix.arch }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v6
@@ -46,14 +51,19 @@ jobs:
 
 
   windows_wheels:
-    # using windows-2022 as windows-2025 does not have the proper Windows SDK installed
-    runs-on: windows-2022
     needs: prepare_angle
     strategy:
       fail-fast: false
       matrix:
         python: [ '3.9', '3.10', '3.11', '3.12', '3.13', '3.14' ]
-        arch: ['x64']
+        arch: ['x64', 'arm64']
+        exclude:
+          - arch: 'arm64'
+            python: '3.9'
+          - arch: 'arm64'
+            python: '3.10'
+    # using windows-2022 as windows-2025 does not have the proper Windows SDK installed
+    runs-on: ${{ case(matrix.arch=='arm64', 'windows-11-arm64', 'windows-2022') }}
     env:
       PACKAGE_ARCH: ${{ matrix.arch }}
     steps:
